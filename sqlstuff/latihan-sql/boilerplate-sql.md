@@ -261,11 +261,24 @@ Kode SQL untuk menghitung total revenue dari setiap barang yang telah dijual
 ```sql
 select kode_pelanggan, nama_produk, qty, harga, (qty*harga) total from tr_penjualan where (qty*harga) >= 100000 order by total desc
 ```
+
 Kode SQL untuk melakukan pembulatan bilangan desimal dua angka dibelakang koma (xxx.05)
 ```sql
 select round(sum(lat_n),2) lat, round(sum(long_w),2) lon from station;
 ```
 
+Kode SQL untuk menggabungkan dan menghitung 2 tabel dengan menggunakan mendeklarasikan fungsi
+```sql
+with premium_user as (
+select count(distinct pu.user_id) 'Total Purchased Premium in 2023'
+from eklipsedataanalysttest.premium_users pu
+),
+non_premium_user as (
+select count(distinct pu.user_id) 'Total Not Purchased Premium in 2023'
+from eklipsedataanalysttest.premium_users pu
+where pu.user_id not in (select c.user_id from eklipsedataanalysttest.clips c)
+) select * from premium_user, non_premium_user
+```
 
 CONTINUE HERE...
 
