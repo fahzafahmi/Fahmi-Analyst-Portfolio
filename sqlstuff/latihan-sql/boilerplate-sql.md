@@ -269,16 +269,74 @@ select round(sum(lat_n),2) lat, round(sum(long_w),2) lon from station;
 
 Kode SQL untuk menggabungkan dan menghitung 2 tabel dengan menggunakan mendeklarasikan fungsi
 ```sql
+/*
+ * Jumlah total user yang subscribe premium di tahun 2023 FY
+ * Serta jumlah total user yang tidak subscribe premium di tahun 2023 FY
+ *
+ * Output Header Tabel
+ * | Premium User | Non Premium User|
+ * FY = Full Year
+ */
+
 with premium_user as (
-select count(distinct pu.user_id) 'Total Purchased Premium in 2023'
-from eklipsedataanalysttest.premium_users pu
+		select count(distinct pu.user_id) 'Total Purchased Premium in 2023'
+		from eklipsedataanalysttest.premium_users pu
 ),
 non_premium_user as (
-select count(distinct pu.user_id) 'Total Not Purchased Premium in 2023'
-from eklipsedataanalysttest.premium_users pu
-where pu.user_id not in (select c.user_id from eklipsedataanalysttest.clips c)
-) select * from premium_user, non_premium_user
+		select count(distinct pu.user_id) 'Total Not Purchased Premium in 2023'
+		from eklipsedataanalysttest.premium_users pu
+		where pu.user_id not in (select c.user_id from eklipsedataanalysttest.clips c)
+)
+select * from premium_user, non_premium_user
 ```
+
+Kode SQL untuk menghitung jumlah total dengan kondisi terentu dan mengscrap data yang sesuai dengan kategorisasi yang sudah ditentukan
+```sql
+/*
+ * For users who purchased premium in the last 3 months:
+ * Get the number of users who purchased premium, the number of users who shared any clips,
+ * the total number of clips shared,
+ * and the total number of gamesessions from which the shared clips were generated.
+ *
+ * Output header tabel
+ * | Total Purchased Premium Within 3 Months | Total Shared by Subscribed Users | Shared Game Sessions |
+ */
+
+select count(distinct pu.user_id) 'Total Purchased Premium Within 3 Months',
+		count(distinct sc.created_at) 'Total Shared by Subscribed Users',
+		count(distinct sc.gamesession_Id) 'Shared Game Sessions'
+from eklipsedataanalysttest.premium_users pu
+		inner join eklipsedataanalysttest.shared_clips sc on sc.user_id = pu.user_id
+where pu.canceled_at = 0 and pu.starts_at between '2023-09-01' and '2023-12-31'
+		and pu.ends_at > '2023-12-31' and sc.created_at between '2023-09-01' and '2023-12-31'
+```
+
+Kode SQL untuk menghitung dari 2 tabel dengan primary key tabel user_id dan foreign tabel user_id
+```sql
+/*
+ * Calculate, on a weekly basis:
+ * The number of users engaged.
+ * The number of clips engaged.
+ * The total number of gamesessions from which the engaged clips were generated.
+ * 
+ * Note: An engaged clip is when a clip is downloaded, shared, or edited.
+ *
+ * Output header tabel
+ * | Total Users | Total Clip Edited | Total Clip Downloaded | Total Shared Clip |
+ */
+
+select count(distinct c.user_id) 'Total Users',
+		count(distinct c.gamesession_Id) 'Total Clip Edited',
+		count(distinct dc.id) 'Total Clip Downlodaed',
+		count(distinct sc.created_at) 'Total Shared Clip'  
+from eklipsedataanalysttest.clips c
+		inner join eklipsedataanalysttest.shared_clips sc on sc.user_id = c.user_id
+		inner join eklipsedataanalysttest.downloaded_clips dc on dc.user_Id = sc.user_id
+where c.created_at between '2023-12-01' and '2023-12-07' and dc.created_at between '2023-12-01' and '2023-12-07'
+```
+
+
+
 
 CONTINUE HERE...
 
