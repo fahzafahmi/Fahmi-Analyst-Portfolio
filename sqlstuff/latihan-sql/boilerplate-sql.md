@@ -44,8 +44,10 @@ WHERE reg.store_city_id IN (SELECT store_city_id FROM region
                         WHERE region IN ('Bali','Yogyakarta')
                         GROUP BY store_city_id)
 ORDER BY full_name;
+```
 
 Kode SQL untuk mengelompokkan data sesuai kategori yang sudah ditentukan
+```sql
 SELECT CASE WHEN store_city_id IN (SELECT store_city_id FROM region
                         WHERE region IN (
                             'Jakarta','Jawa Barat','Bandung',
