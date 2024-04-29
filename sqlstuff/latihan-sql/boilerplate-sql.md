@@ -267,6 +267,8 @@ Kode SQL untuk melakukan pembulatan bilangan desimal dua angka dibelakang koma (
 select round(sum(lat_n),2) lat, round(sum(long_w),2) lon from station;
 ```
 
+[TO BE UPDATED LATER]
+
 Kode SQL untuk menggabungkan dan menghitung 2 tabel dengan menggunakan mendeklarasikan fungsi
 ```sql
 /*
